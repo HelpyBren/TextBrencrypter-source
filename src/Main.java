@@ -60,7 +60,7 @@ public class Main extends Application{
 		//eventos
 		btnEncrypt.setOnAction(event -> {
 			String text = txtEntrada.getText();
-			if(text.contains("1234567890")) {
+			if(text.matches("^[a-zA-Z]+$")) { //ahora si valida que solo tenga caracteres y no numeros ni simbolos ni pibles
 				lblError.setVisible(true);
 			}else {
 				lblError.setVisible(false);
