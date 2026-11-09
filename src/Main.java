@@ -2,12 +2,14 @@ import javafx.application.Application;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.*;
 
 public class Main extends Application{
 	
+	@Override
 	public void start(Stage stage) {
 		
 		// layouts
@@ -30,16 +32,14 @@ public class Main extends Application{
 		// elementos/nodos
 		Label lblTitulo = new Label("TEXT BRENCRYPTER");
 		lblTitulo.setFont(Font.font("Trebuchet MS", FontWeight.BOLD, 32));
-		lblTitulo.setStyle("-fx-text-fill: FFFFFF;");
+		lblTitulo.setStyle("-fx-text-fill: #FFFFFF;");
         lblTitulo.setAlignment(Pos.CENTER);
 		
         TextArea txtEntrada = new TextArea();
-        txtEntrada.maxWidth(2);
-        txtEntrada.maxHeight(3);
         
-        Label lblError = new Label("ERROR");
+        Label lblError = new Label("ERROR: No se admiten caracteres especiales ni números.");
 		lblError.setFont(Font.font("Trebuchet MS", FontWeight.BOLD, 16));
-		lblError.setStyle("-fx-text-fill: FF0000;");
+		lblError.setStyle("-fx-text-fill: #FF0000;");
         lblError.setAlignment(Pos.CENTER);
         lblError.setVisible(false);
         
@@ -49,7 +49,7 @@ public class Main extends Application{
         TextArea txtEncrypt = new TextArea();
         
         Button btnCopiar = new Button("Copiar a portapapeles");
-        Button btnDecrypt = new Button("Desecriptar");
+        Button btnDecrypt = new Button("Desencriptar");
 		
 		//Adds
         buttons.getChildren().addAll(btnEncrypt,btnLimpiar);
@@ -60,16 +60,39 @@ public class Main extends Application{
 		//eventos
 		btnEncrypt.setOnAction(event -> {
 			String text = txtEntrada.getText();
-			if(!text.matches("^[a-zA-Z]+$")) { //ahora si valida que solo tenga caracteres y no numeros ni simbolos ni pibles
+			if(text.isBlank()||!text.matches("^[a-zA-Z ]+$")) { //ahora si valida que solo tenga caracteres y no numeros ni simbolos ni pibles
 				lblError.setVisible(true);
 			}else {
 				lblError.setVisible(false);
+				
+				txtEncrypt.setText(Encriptador.invPalabra(text).trim());
 			}
 		});
+		
+		btnDecrypt.setOnAction(event -> {
+			String text = txtEncrypt.getText();
+			if(text.isBlank() ||!text.matches("^[a-zA-Z ]+$")) {
+				lblError.setVisible(true);
+			}else {
+				lblError.setVisible(false);
+				
+				txtEntrada.setText(Encriptador.invPalabra(text).trim());
+				//TODO: PARA EL DESENCRIPTADOR CAMBIAR EL MÉTODO AL AGREGAR LAS COLAS Y HASHMAPS!!!!!111111111111111
+			}
+		});
+		
 		btnLimpiar.setOnAction(event -> {
         	txtEntrada.clear();
         	txtEncrypt.clear();
         });
+		
+		btnCopiar.setOnAction(event -> {
+		    ClipboardContent contenido = new ClipboardContent();
+		    contenido.putString(txtEncrypt.getText());
+		    Clipboard.getSystemClipboard().setContent(contenido);
+		});
+		
+		//configuraciones de escena
 		
 		stage.setScene(new Scene(root, 640, 480));
 		stage.setTitle("Text Brencrypter");
